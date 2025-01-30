@@ -1,0 +1,13 @@
+[Unit]
+Description=Terminusa Background Worker
+After=network.target
+
+[Service]
+User=terminusa
+Group=terminusa
+WorkingDirectory=/opt/terminusa
+Environment="PATH=/opt/terminusa-venv/bin"
+ExecStart=/opt/terminusa-venv/bin/python -m game.worker
+
+[Install]
+WantedBy=multi-user.target

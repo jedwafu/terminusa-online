@@ -1,0 +1,23 @@
+# Core
+flask==3.0.2
+flask-socketio==5.3.6
+flask-sqlalchemy==3.1.1
+python-dotenv==1.0.0
+asyncpg==0.29.0
+
+# Blockchain
+solana==0.29.0
+anchorpy==0.13.0
+solders==0.16.1
+base58==2.1.1
+
+# Game Systems
+numpy==1.26.4
+pandas==2.2.1
+redis==5.0.3
+
+# Utilities
+gunicorn==21.2.0
+gevent==23.9.1
+gevent-websocket==0.10.1
+alembic==1.13.1

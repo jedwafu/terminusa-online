@@ -1,0 +1,13 @@
+[Unit]
+Description=Terminusa Web Service
+After=network.target
+
+[Service]
+User=terminusa
+Group=terminusa
+WorkingDirectory=/opt/terminusa
+Environment="PATH=/opt/terminusa-venv/bin"
+ExecStart=/opt/terminusa-venv/bin/gunicorn -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 4 -b 0.0.0.0:5000 game.web.app:app
+
+[Install]
+WantedBy=multi-user.target

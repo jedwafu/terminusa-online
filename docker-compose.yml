@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_PASSWORD: terminusa
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    volumes:
+      - redisdata:/data
+
+  web:
+    build: .
+    command: gunicorn -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 4 -b 0.0.0.0:5000 game.web.app:app
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+      - redis
+
+  worker:
+    build: .
+    command: python -m game.worker
+    depends_on:
+      - redis
+
+volumes:
+  pgdata:
+  redisdata:
