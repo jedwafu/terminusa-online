@@ -1,6 +1,8 @@
 from sqlalchemy import Column, Integer, String, JSON
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.asyncio import create_async_engine
 
+engine = create_async_engine(os.getenv("DATABASE_URL"))
 Base = declarative_base()
 
 class PlayerModel(Base):
