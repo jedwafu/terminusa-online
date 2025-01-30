@@ -1,36 +1,54 @@
+# game/ssh/terminusa_shell.py
 import sys
+import cmd
 from game.core.player import Player
-from game.core.dungeon import Dungeon
-from game.core.combat import CombatEngine
+from game.core.dungeon import Dungeon, DungeonClass
+from game.core.combat import CombatEngine, CombatResult
 
-class TerminusaShell:
+class TerminusaShell(cmd.Cmd):
+    prompt = 'Terminusa> '
+    
     def __init__(self, stdin, stdout):
-        self.stdin = stdin
-        self.stdout = stdout
+        super().__init__(stdin=stdin, stdout=stdout)
         self.player = None
+        self.current_dungeon = None
         
     def start(self):
-        self.stdout.write("Welcome to Terminusa Online!\n")
+        self.stdout.write("Terminusa Online - SSH Interface\n")
         self.authenticate()
-        self.game_loop()
+        self.cmdloop()
         
     def authenticate(self):
         self.stdout.write("Username: ")
-        username = self.stdin.readline().strip()
-        # Add actual authentication logic
+        username = sys.stdin.readline().strip()
         self.player = Player(name=username)
         
-    def game_loop(self):
-        while True:
-            self.stdout.write("\n> ")
-            command = self.stdin.readline().strip().lower()
+    def do_enter(self, arg):
+        """Enter a dungeon: enter <class>"""
+        try:
+            dungeon_class = DungeonClass[arg.upper()]
+            self.current_dungeon = Dungeon(dungeon_class)
+            self.stdout.write(f"Entered {dungeon_class.name} dungeon!\n")
+        except KeyError:
+            self.stdout.write("Invalid dungeon class (E-S)\n")
             
-            if command == 'exit':
-                break
-                
-            response = self.process_command(command)
-            self.stdout.write(response + "\n")
+    def do_attack(self, arg):
+        if not self.current_dungeon:
+            self.stdout.write("Not in a dungeon!\n")
+            return
             
-    def process_command(self, command: str) -> str:
-        # Add command processing logic
-        return f"Received command: {command}"
+        combat = CombatEngine(self.player, self.current_dungeon.monsters[0])
+        result = combat.resolve_combat()
+        
+        if result == CombatResult.WIN:
+            self.stdout.write("You defeated the monster!\n")
+        else:
+            self.stdout.write("You were defeated!\n")
+            
+    def do_exit(self, arg):
+        self.stdout.write("Logging out...\n")
+        return True
+
+if __name__ == "__main__":
+    shell = TerminusaShell(sys.stdin, sys.stdout)
+    shell.start()
